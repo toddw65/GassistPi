@@ -47,12 +47,12 @@ pwm.start(0)#Initialize servo position to 0
 #Function for setting servo angle
 def SetAngle(angle):
     duty = angle / 18 + 2
-	GPIO.output(05, True)
+    GPIO.output(05, True)
     pwm.ChangeDutyCycle(0)
     time.sleep(5)
-	pwm.ChangeDutyCycle(duty)
-	time.sleep(1)
-	GPIO.output(05, False)
+    pwm.ChangeDutyCycle(duty)
+    time.sleep(1)
+    GPIO.output(05, False)
 	
     
 def process_event(event):
