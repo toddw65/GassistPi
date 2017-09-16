@@ -24,6 +24,7 @@ import os
 import click
 import grpc
 import time
+import re
 import google.auth.transport.grpc
 import google.auth.transport.requests
 import google.oauth2.credentials
@@ -52,14 +53,26 @@ gpio = (23,24,25)#GPIOS for 'var'. Add other GPIOs that you want
 for pin in gpio:
     GPIO.setup(pin, GPIO.OUT)
     GPIO.output(pin, 0)
-    
+
+GPIO.setup(05, GPIO.OUT)
+pwm=GPIO.PWM(05, 50)
+pwm.start(0)  
+
 ASSISTANT_API_ENDPOINT = 'embeddedassistant.googleapis.com'
 END_OF_UTTERANCE = embedded_assistant_pb2.ConverseResponse.END_OF_UTTERANCE
 DIALOG_FOLLOW_ON = embedded_assistant_pb2.ConverseResult.DIALOG_FOLLOW_ON
 CLOSE_MICROPHONE = embedded_assistant_pb2.ConverseResult.CLOSE_MICROPHONE
 DEFAULT_GRPC_DEADLINE = 60 * 3 + 5
 
-
+def SetAngle(angle):
+    duty = angle / 18 + 2
+    GPIO.output(05, True)
+    pwm.ChangeDutyCycle(0)
+    time.sleep(5)
+    pwm.ChangeDutyCycle(duty)
+    time.sleep(5)
+    GPIO.output(05, False)
+    
 class Assistant():
     def __init__(self):
         self.api_endpoint = ASSISTANT_API_ENDPOINT
@@ -173,6 +186,10 @@ class Assistant():
                                 time.sleep(10)
                                 os.system("sudo shutdown -h now")
                                 break
+                            
+                            elif 'motor'.lower() in str(usr).lower():
+                                for s in re.findall(r'\b\d+\b', str(usr)):
+                                    SetAngle(int(s))
                             else:
                                 for num, name in enumerate(var):
                                     if name.lower() in str(usr).lower():
