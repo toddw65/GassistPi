@@ -40,18 +40,18 @@ for pin in gpio:
     GPIO.setup(pin, GPIO.OUT)
     GPIO.output(pin, 0)
 
-GPIO.setup(05, GPIO.OUT)#GPIO5 Assigned for servo
-pwm=GPIO.PWM(05, 50)#PWM set to 50Hz
-pwm.start(0)#Initialize servo position to 0
+GPIO.setup(05, GPIO.OUT)
+pwm=GPIO.PWM(05, 50)
+pwm.start(0)
 
-#Function for setting servo angle
+
 def SetAngle(angle):
     duty = angle / 18 + 2
     GPIO.output(05, True)
     pwm.ChangeDutyCycle(0)
     time.sleep(5)
     pwm.ChangeDutyCycle(duty)
-    time.sleep(1)
+    time.sleep(5)
     GPIO.output(05, False)
 	
     
@@ -108,7 +108,7 @@ def main():
                     #subprocess.call(["shutdown -h now"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                     break
                     
-                elif 'servo'.lower() in str(usr).lower():
+                elif 'motor'.lower() in str(usr).lower():
                     for s in re.findall(r'\b\d+\b', str(usr)):
                         SetAngle(int(s))                  
                 else:
